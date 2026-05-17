@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mamah Alisa Frozen Food | Premium & Fresh</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #1e3a8a;
+            --blue-bg: #f0f7ff;
+            --orange: #f97316;
+            --text: #334155;
+            --white: #ffffff;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --soft-gray: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--blue-bg); color: var(--text); scroll-behavior: smooth; }
+
+        /* NAVBAR */
+        .navbar { background: var(--white); padding: 15px 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .navbar .container { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: auto; padding: 0 20px; }
+        .logo { font-size: 1.3rem; font-weight: 700; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--orange); }
+        
+        .cart-btn { background: var(--navy); color: white; padding: 8px 15px; border-radius: 50px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; border: none; }
+        .badge { background: var(--orange); font-size: 11px; padding: 2px 7px; border-radius: 50%; font-weight: bold; transition: 0.3s; }
+        .cart-pop { transform: scale(1.3); }
+
+        /* HERO */
+        .hero { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 70px 20px; text-align: center; }
+        .hero h1 { font-size: 2.2rem; margin-bottom: 10px; font-weight: 700; }
+        .btn-hero { background: var(--orange); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1rem; transition: 0.3s; margin-top: 15px; }
+
+        /* ADMIN PANEL */
+        .admin-panel { display: none; background: #fff; border: 2px solid var(--navy); padding: 20px; margin: 20px auto; max-width: 1100px; border-radius: 15px; }
+        .admin-panel.active { display: block; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
+        .admin-table th, .admin-table td { border: 1px solid #eee; padding: 10px; text-align: left; }
+        .mode-indicator { font-size: 0.9rem; font-weight: 600; color: var(--orange); margin-bottom: 10px; display: inline-block; background: #fff7ed; padding: 4px 12px; border-radius: 6px; border: 1px solid #ffedd5; }
+
+        /* CATALOG */
+        .catalog { padding: 50px 20px; max-width: 1100px; margin: auto; }
+        .section-title { text-align: center; margin-bottom: 30px; color: var(--navy); }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+        .product-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; border: 1px solid #eef2ff; }
+        .product-card img { width: 100%; height: 180px; object-fit: cover; background: #eee; }
+        .card-info { padding: 15px; }
+        .btn-add { background: var(--navy); color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+
+        /* MODALS */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; width: 100%; max-width: 450px; border-radius: 15px; overflow: hidden; animation: slideUp 0.3s ease; }
+
+        /* LOGIN BOX */
+        .login-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px); z-index: 3000; align-items: center; justify-content: center; }
+        .login-overlay.active { display: flex; }
+        .login-box { background: white; padding: 40px 30px; border-radius: 20px; width: 90%; max-width: 380px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .login-box h3 { color: var(--navy); font-size: 1.5rem; margin-bottom: 10px; font-weight: 700; }
+        .login-box input { width: 100%; padding: 12px 15px; margin-bottom: 20px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1rem; text-align: center; outline: none; }
+        .btn-login { background: var(--navy); color: white; border: none; padding: 12px; width: 100%; border-radius: 12px; font-weight: 600; cursor: pointer; }
+
+        /* CART & FORM */
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f1f1; }
+        .qty-control { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+        .btn-qty { background: #e2e8f0; border: none; width: 26px; height: 26px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: var(--text); }
+        .btn-qty:hover { background: #cbd5e1; }
+        .btn-remove { background: #fee2e2; color: var(--danger); border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600; }
+        .btn-remove:hover { background: #fecaca; }
+        
+        .form-group { margin-bottom: 12px; text-align: left; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: var(--navy); }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; }
+
+        .btn-wa { background: var(--success); color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-top: 10px; }
+        .footer-admin { text-align: center; padding: 40px; color: var(--soft-gray); font-size: 0.8rem; cursor: pointer; }
+
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* SEKSI KEUNGGULAN */
+        .features { padding: 40px 20px; max-width: 1100px; margin: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; text-align: center; }
+        .feature-box { background: white; padding: 25px 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); border: 1px solid #eef2ff; }
+        .feature-box .icon { font-size: 2rem; margin-bottom: 10px; display: inline-block; }
+        .feature-box h3 { color: var(--navy); font-size: 1.1rem; margin-bottom: 8px; }
+        .feature-box p { color: var(--soft-gray); font-size: 0.85rem; line-height: 1.4; }
+
+        /* SEKSI TESTIMONI */
+        .testimonials { background: #fff; padding: 50px 20px; text-align: center; margin-top: 20px; }
+        .testimonial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1100px; margin: 30px auto 0 auto; }
+        .testi-card { background: var(--blue-bg); padding: 20px; border-radius: 12px; text-align: left; position: relative; }
+        .testi-card p { font-style: italic; font-size: 0.9rem; color: var(--text); margin-bottom: 15px; }
+        .testi-user { font-weight: 600; font-size: 0.85rem; color: var(--navy); display: flex; align-items: center; gap: 5px; }
+        .stars { color: #facc15; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="container">
+            <a href="#" class="logo">Mamah Alisa <span>Frozen</span></a>
+            <button class="cart-btn" onclick="toggleCart()">
+                <span>🛒 Keranjang</span> <span id="cartCount" class="badge">0</span>
+            </button>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Frozen Food Higienis & Lezat</h1>
+        <p>Solusi lauk praktis keluarga Anda. Area Bogor.</p>
+        <button class="btn-hero" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">Lihat Katalog</button>
+    </section>
+
+    <!-- SEKSI KEUNGGULAN TOKO -->
+    <section class="features">
+        <div class="feature-box">
+            <span class="icon">❄️</span>
+            <h3>Garansi Selalu Fresh</h3>
+            <p>Produk disimpan dalam freezer suhu -18°C untuk menjaga kualitas nutrisi dan rasa hingga ke tangan Anda.</p>
+        </div>
+        <div class="feature-box">
+            <span class="icon">🚚</span>
+            <h3>Pengiriman Area Bogor</h3>
+            <p>Siap kirim cepat via Kurir Toko atau Grab/Gojek. Pesanan diantar dalam kondisi tetap beku aman.</p>
+        </div>
+        <div class="feature-box">
+            <span class="icon">💯</span>
+            <h3>100% Halal & Higienis</h3>
+            <p>Semua produk frozen food diproses secara bersih, higienis, dan terjamin kehalalannya untuk keluarga.</p>
+        </div>
+    </section>
+
+    <!-- SEKSI TESTIMONI PELANGGAN -->
+    <section class="testimonials">
+        <h2 class="section-title">Apa Kata Mereka?</h2>
+        <p style="color: var(--soft-gray); font-size: 0.9rem; margin-top: -20px;">Ulasan jujur dari pelanggan setia Mamah Alisa</p>
+        
+        <div class="testimonial-grid">
+            <div class="testi-card">
+                <p>"Sering bgt stok nugget dan ayam fillet di sini buat bekal anak sekolah. Praktis, dagingnya berasa, dan pengiriman ke Ciomas cepet banget!"</p>
+                <div class="testi-user">
+                    👩 Bu mela (Bogor Barat) <span class="stars">⭐⭐⭐⭐⭐</span>
+                </div>
+            </div>
+            <div class="testi-card">
+                <p>"Fishroll-nya juara! Pas nyampe rumah masih bener-bener beku, ga lembek di jalan. Seller-nya juga ramah banget pas dichat lewat WA."</p>
+                <div class="testi-user">
+                    👩 Kak Amelia (Suryakencana) <span class="stars">⭐⭐⭐⭐⭐</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADMIN PANEL -->
+    <section id="adminPanel" class="admin-panel">
+        <h2 class="section-title">Dashboard Admin</h2>
+        <div style="background: var(--blue-bg); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+            <div id="adminModeTitle" class="mode-indicator">Mode: Tambah Produk Baru</div>
+            <input type="hidden" id="admin-id">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; align-items: center;">
+                <input type="text" id="admin-nama" placeholder="Nama Produk">
+                <input type="number" id="admin-harga" placeholder="Harga">
+                <!-- TIPE DIUBAH MENJADI INPUT TEXT AGAR BISA MEMASUKKAN LINK GAMBAR ONLINE SECARA PERMANEN -->
+                <input type="text" id="admin-img" placeholder="Link URL Gambar Online (https://...)">
+                <div style="display: flex; gap: 5px; height: 100%;">
+                    <button onclick="saveProduct()" class="btn-add" style="background: var(--success); flex: 2;">Simpan</button>
+                    <button id="btnBatalEdit" onclick="resetAdminForm()" class="btn-remove" style="background: var(--soft-gray); color: white; display: none; align-items: center; justify-content: center;">Batal</button>
+                </div>
+            </div>
+        </div>
+        <table class="admin-table">
+            <thead>
+                <tr><th>Produk</th><th>Harga</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="adminTableBody"></tbody>
+        </table>
+        <button onclick="logoutAdmin()" class="btn-login" style="background: var(--soft-gray); max-width: 150px; margin-top: 15px;">Tutup Panel</button>
+    </section>
+
+    <section class="catalog" id="catalog">
+        <h2 class="section-title">Katalog Produk</h2>
+        <div id="productGrid" class="product-grid"></div>
+    </section>
+
+    <!-- MODAL KERANJANG -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <div style="padding:15px; background:var(--navy); color:white; display:flex; justify-content:space-between; align-items:center;">
+                <h3>Keranjang</h3>
+                <span onclick="toggleCart()" style="cursor:pointer; font-size:24px;">&times;</span>
+            </div>
+            <div id="cartItems" style="padding:15px; max-height:280px; overflow-y:auto;"></div>
+            <div style="padding:15px; border-top:1px solid #eee;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold;">
+                    <span>Total:</span>
+                    <span id="cartTotal">Rp 0</span>
+                </div>
+                <button class="btn-add" style="background:var(--orange);" onclick="openCheckout()">Checkout Sekarang</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CHECKOUT -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <div style="padding:15px; background:var(--navy); color:white; display:flex; justify-content:space-between;">
+                <h3>Data Pengiriman</h3>
+                <span onclick="closeCheckout()" style="cursor:pointer; font-size:24px;">&times;</span>
+            </div>
+            <form id="orderForm" style="padding:20px; max-height:450px; overflow-y:auto;">
+                <div class="form-group"><label>Nama Lengkap</label><input type="text" id="c-nama" required></div>
+                <div class="form-group"><label>Nomor WhatsApp</label><input type="tel" id="c-hp" required></div>
+                <div class="form-group"><label>Alamat Lengkap</label><textarea id="c-alamat" required></textarea></div>
+                <div class="form-group">
+                    <label>Metode Pengiriman</label>
+                    <select id="c-kurir">
+                        <option>Kurir Toko (Bogor)</option>
+                        <option>Grab/Gojek</option>
+                        <option>Ambil Sendiri</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Metode Pembayaran</label>
+                    <select id="c-bayar">
+                        <option>COD (Bayar di Tempat)</option>
+                        <option>Transfer Bank</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-wa">Kirim Pesanan (WhatsApp)</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL LOGIN ADMIN -->
+    <div id="loginModal" class="login-overlay">
+        <div class="login-box">
+            <h3>Login Admin</h3>
+            <p style="color:var(--soft-gray); font-size:0.8rem; margin-bottom:15px;">Masukkan sandi untuk kelola stok.</p>
+            <input type="password" id="passInput" placeholder="••••••••">
+            <button onclick="handleLogin()" class="btn-login">Masuk Sekarang</button>
+            <p onclick="closeLogin()" style="margin-top: 15px; cursor: pointer; text-decoration: underline; font-size: 0.8rem; color:var(--soft-gray)">Batal</p>
+        </div>
+    </div>
+
+    <footer class="footer-admin" onclick="openLogin()">
+        &copy; 2026 Mamah Alisa Frozen Food | 🔑 <u>Akses Admin</u>
+    </footer>
+
+    <script>
+        const ADMIN_PASSWORD_HASH = "YWRtaW4xMjM="; // Enkripsi Base64 dari 'admin123'
+        
+        // TEMPAT UTAMA UNTUK MENARUH DAFTAR PRODUK ASLI AGAR PERMANEN BISA DILIHAT SEMUA PELANGGAN
+        let defaultProducts = [
+            { 
+                id: 1, 
+                nama: "Ayam Fillet 1kg", 
+                harga: 45000, 
+                img: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=500" 
+            },
+            { 
+                id: 2, 
+                nama: "Fishroll Premium", 
+                harga: 35000, 
+                img: "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500" 
+            }
+        ];
+
+        let products = JSON.parse(localStorage.getItem('mamahAlisaKatalog')) || defaultProducts;
+        let cart = [];
+
+        function syncData() {
+            localStorage.setItem('mamahAlisaKatalog', JSON.stringify(products));
+            loadProducts();
+            renderAdminTable();
+        }
+
+        function loadProducts() {
+            const grid = document.getElementById("productGrid");
+            grid.innerHTML = products.map(p => `
+                <div class="product-card">
+                    <img src="${p.img || 'https://via.placeholder.com/250x180?text=Frozen+Food'}" onerror="this.src='https://via.placeholder.com/250x180?text=Frozen+Food'">
+                    <div class="card-info">
+                        <h3>${p.nama}</h3>
+                        <span class="price">Rp ${p.harga.toLocaleString('id-ID')}</span>
+                        <button class="btn-add" onclick="addToCart(${p.id})">Tambah Keranjang</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id) {
+            const p = products.find(prod => prod.id === id);
+            const existingItem = cart.find(item => item.id === id);
+            
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                cart.push({...p, qty: 1});
+            }
+            
+            updateCartUI();
+            const badge = document.getElementById("cartCount");
+            badge.classList.add("cart-pop");
+            setTimeout(() => badge.classList.remove("cart-pop"), 300);
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    cart = cart.filter(i => i.id !== id);
+                }
+                updateCartUI();
+                renderCartItems();
+            }
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCartUI();
+            renderCartItems();
+        }
+
+        function updateCartUI() { 
+            const totalBarang = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById("cartCount").innerText = totalBarang; 
+        }
+
+        function toggleCart() {
+            renderCartItems();
+            document.getElementById("cartModal").classList.toggle("active");
+        }
+
+        function renderCartItems() {
+            const list = document.getElementById("cartItems");
+            let total = 0;
+            if(cart.length === 0) {
+                list.innerHTML = "<p style='text-align:center; color:#888; padding: 20px;'>Belum ada item.</p>";
+                document.getElementById("cartTotal").innerText = "Rp 0";
+                return;
+            }
+            list.innerHTML = cart.map(item => {
+                const subTotal = item.harga * item.qty;
+                total += subTotal;
+                return `
+                    <div class="cart-item">
+                        <div>
+                            <div style="font-size:0.9rem; font-weight:600;">${item.nama}</div>
+                            <div style="font-size:0.8rem; color:var(--navy); margin-bottom: 2px;">Rp ${subTotal.toLocaleString('id-ID')}</div>
+                            <div class="qty-control">
+                                <button class="btn-qty" onclick="changeQty(${item.id}, -1)">-</button>
+                                <span style="font-size:0.85rem; font-weight:600; min-width:20px; text-align:center">${item.qty}</span>
+                                <button class="btn-qty" onclick="changeQty(${item.id}, 1)">+</button>
+                            </div>
+                        </div>
+                        <button class="btn-remove" onclick="removeFromCart(${item.id})">Hapus</button>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById("cartTotal").innerText = "Rp " + total.toLocaleString('id-ID');
+        }
+
+        function openCheckout() {
+            if(cart.length === 0) return;
+            document.getElementById("cartModal").classList.remove("active");
+            document.getElementById("checkoutModal").classList.add("active");
+        }
+
+        function closeCheckout() { document.getElementById("checkoutModal").classList.remove("active"); }
+
+        document.getElementById("orderForm").onsubmit = (e) => {
+            e.preventDefault();
+            let total = 0;
+            const items = cart.map(i => {
+                const subTotal = i.harga * i.qty;
+                total += subTotal;
+                return `- ${i.nama} x${i.qty} (Rp ${subTotal.toLocaleString('id-ID')})`;
+            }).join('%0A');
+
+            const nama = document.getElementById("c-nama").value;
+            const hp = document.getElementById("c-hp").value;
+            const alamat = document.getElementById("c-alamat").value;
+            const kurir = document.getElementById("c-kurir").value;
+            const bayar = document.getElementById("c-bayar").value;
+
+            const pesan = `*PESANAN BARU*%0A%0A` +
+                          `Nama: ${nama}%0A` +
+                          `No HP: ${hp}%0A` +
+                          `Alamat: ${alamat}%0A%0A` +
+                          `*Item:*%0A${items}%0A%0A` +
+                          `*Total: Rp ${total.toLocaleString('id-ID')}*%0A` +
+                          `*Pengiriman:* ${kurir}%0A` +
+                          `*Pembayaran:* ${bayar}`;
+
+            window.open(`https://wa.me/628999154952?text=${pesan}`);
+
+            cart = [];
+            updateCartUI();
+            closeCheckout();
+            alert("Terima kasih! Pesanan Anda telah diteruskan ke WhatsApp.");
+        };
+
+        function handleLogin() {
+            if(btoa(document.getElementById("passInput").value) === ADMIN_PASSWORD_HASH) {
+                closeLogin();
+                document.getElementById("adminPanel").classList.add("active");
+                renderAdminTable();
+                document.getElementById("adminPanel").scrollIntoView();
+            } else { 
+                alert("Sandi salah!"); 
+                document.getElementById("passInput").value = "";
+            }
+        }
+
+        function openLogin() { document.getElementById("loginModal").classList.add("active"); }
+        function closeLogin() { document.getElementById("loginModal").classList.remove("active"); }
+        function logoutAdmin() { document.getElementById("adminPanel").classList.remove("active"); }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById("adminTableBody");
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td>${p.nama}</td>
+                    <td>Rp ${p.harga.toLocaleString('id-ID')}</td>
+                    <td>
+                        <button class="btn-remove" style="background:#eab308; color:white; margin-right:4px;" onclick="editProduct(${p.id})">Edit</button>
+                        <button class="btn-remove" onclick="deleteProduct(${p.id})">Hapus</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function saveProduct() {
+            const id = document.getElementById("admin-id").value;
+            const nama = document.getElementById("admin-nama").value;
+            const harga = parseInt(document.getElementById("admin-harga").value);
+            const imgInput = document.getElementById("admin-img");
+            
+            if(!nama || !harga) return alert("Lengkapi data nama dan harga!");
+
+            const gambarUrl = imgInput.value.trim();
+
+            if(id) {
+                const idx = products.findIndex(p => p.id == id);
+                const gambarLama = products[idx].img;
+                products[idx] = { ...products[idx], nama, harga, img: gambarUrl || gambarLama };
+            } else {
+                products.push({ id: Date.now(), nama, harga, img: gambarUrl || "" });
+            }
+            
+            resetAdminForm();
+            syncData();
+        }
+
+        function editProduct(id) {
+            const p = products.find(prod => prod.id === id);
+            document.getElementById("admin-id").value = p.id;
+            document.getElementById("admin-nama").value = p.nama;
+            document.getElementById("admin-harga").value = p.harga;
+            document.getElementById("admin-img").value = p.img;
+            
+            document.getElementById("adminModeTitle").innerText = `Mode: Mengedit (${p.nama})`;
+            document.getElementById("btnBatalEdit").style.display = "inline-flex";
+            
+            window.scrollTo({ top: document.getElementById("adminPanel").offsetTop, behavior: 'smooth' });
+        }
+
+        function resetAdminForm() {
+            document.getElementById("admin-id").value = "";
+            document.getElementById("admin-nama").value = "";
+            document.getElementById("admin-harga").value = "";
+            document.getElementById("admin-img").value = ""; 
+            
+            document.getElementById("adminModeTitle").innerText = "Mode: Tambah Produk Baru";
+            document.getElementById("btnBatalEdit").style.display = "none";
+        }
+
+        function deleteProduct(id) {
+            if(confirm("Hapus produk?")) {
+                products = products.filter(p => p.id !== id);
+                if(document.getElementById("admin-id").value == id) {
+                    resetAdminForm();
+                }
+                syncData();
+            }
+        }
+
+        loadProducts();
+    </script>
+</body>
+</html>
